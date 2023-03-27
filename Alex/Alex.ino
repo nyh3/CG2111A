@@ -1,4 +1,4 @@
-#include <serialize.h>
+#include "serialize.h"
 #include <math.h>
 #include "packet.h"
 #include "constants.h"
@@ -37,7 +37,7 @@ volatile TDirection dir = STOP;
 #define RR                  11  // Right reverse pin
 
 // PI, for calculating turn circumference
-#define PI 3.141592654
+//#define PI 3.141592654
 
 // Alex's length and breadth in cm
 #define ALEX_LENGTH 16
@@ -74,12 +74,15 @@ volatile unsigned long rightRevs;
 // Forward and backward distance traveled
 volatile unsigned long forwardDist;
 volatile unsigned long reverseDist;
+
 // variables to keep track of whether we have moved a commanded distance
 unsigned long deltaDist;
 unsigned long newDist;
+
 // variables to keep track of our turning angle
 unsigned long deltaTicks;
 unsigned long targetTicks;
+
 /*
  * 
  * Alex Communication Routines.
@@ -407,7 +410,8 @@ void forward(float dist, float speed)
   if(dist > 0)
     deltaDist = dist;
   else
-    deltaDist=9999999;
+    deltaDist = 9999999; //dist = 0, large no. so Alex moves indefinitely
+  
   newDist=forwardDist + deltaDist;
   dir = FORWARD;
   int val = pwmVal(speed);
@@ -433,10 +437,11 @@ void forward(float dist, float speed)
 // continue reversing indefinitely.
 void reverse(float dist, float speed)
 {
-  if(dist > 0)
-  deltaDist = dist;
-  else
-  deltaDist=9999999;
+  if(dist > 0) {
+    deltaDist = dist;
+  } else {
+    deltaDist = 9999999;
+  }
   newDist=reverseDist + deltaDist;
 
   int val = pwmVal(speed);
@@ -466,6 +471,7 @@ unsigned long computeDeltaTicks(float ang)
   unsigned long ticks = (unsigned long) ((ang * AlexCirc * COUNTS_PER_REV) / (360.0 * WHEEL_CIRC));
   return ticks;
 }
+
 // Turn Alex left "ang" degrees at speed "speed".
 // "speed" is expressed as a percentage. E.g. 50 is
 // turn left at half speed.
@@ -475,13 +481,14 @@ void left(float ang, float speed)
 {
   int val = pwmVal(speed);
   dir = LEFT;
-  if(ang == 0)
+  
+  if(ang == 0) {
     deltaTicks=99999999;
-  else
-  {
+  } else {
     deltaTicks=computeDeltaTicks(ang);
   }
   targetTicks = leftReverseTicksTurns + deltaTicks;
+  
   // For now we will ignore ang. We will fix this in Week 9.
   // We will also replace this code with bare-metal later.
   // To turn left we reverse the left wheel and move
@@ -501,13 +508,13 @@ void right(float ang, float speed)
 {
   int val = pwmVal(speed);
   dir = RIGHT;
-  if(ang == 0)
+  if(ang == 0) {
     deltaTicks=99999999;
-  else
-  {
+  } else {
     deltaTicks=computeDeltaTicks(ang);
   }
   targetTicks = leftReverseTicksTurns + deltaTicks;
+  
   // For now we will ignore ang. We will fix this in Week 9.
   // We will also replace this code with bare-metal later.
   // To turn right we reverse the right wheel and move
@@ -636,9 +643,10 @@ while(!exit)
 }
 
 void setup() {
-  // put your setup code here, to run once:
+  // compute diagonal
   AlexDiagonal = sqrt((ALEX_LENGTH * ALEX_LENGTH) + (ALEX_BREADTH * ALEX_BREADTH));
   AlexCirc = PI * AlexDiagonal;
+  
   cli();
   setupEINT();
   setupSerial();
@@ -685,70 +693,52 @@ void loop() {
 
   TResult result = readPacket(&recvPacket);
   
-  if(result == PACKET_OK)
-    handlePacket(&recvPacket);
-  else
-    if(result == PACKET_BAD)
-    {
-      sendBadPacket();
-    }
-    else
-      if(result == PACKET_CHECKSUM_BAD)
-      {
-        sendBadChecksum();
-      } 
-   if(deltaDist > 0) {
-  if(dir==FORWARD) {
-    if(forwardDist > newDist)
-    {
+  if(result == PACKET_OK) {
+    handlePacket(&recvPacket); 
+  } else if(result == PACKET_BAD) {
+    sendBadPacket();
+  } else if(result == PACKET_CHECKSUM_BAD) {
+    sendBadChecksum();
+  } 
+
+  if(deltaDist > 0) {
+    if(dir==FORWARD) {
+      if(forwardDist > newDist) {
+        deltaDist=0;
+        newDist=0;
+        stop();
+      }
+    } else if(dir == BACKWARD) {
+      if(reverseDist > newDist) {
+        deltaDist=0;
+        newDist=0;
+        stop();
+      }
+    } else if(dir == STOP) {
       deltaDist=0;
       newDist=0;
       stop();
-      }
     }
-      else
-      if(dir == BACKWARD)
-      {
-        if(reverseDist > newDist)
-        {
-          deltaDist=0;
-          newDist=0;
-          stop();
-          }
-      }
-          else
-          if(dir == STOP)
-          {
-            deltaDist=0;
-            newDist=0;
-            stop();
-          }
-   }
-   if (deltaTicks > 0)
-   {
-    if (dir == LEFT)
-    {
-      if (leftReverseTicksTurns >= targetTicks)
-      {
+  }
+  if (deltaTicks > 0) {
+    if (dir == LEFT) {
+      if (leftReverseTicksTurns >= targetTicks) { 
         deltaTicks = 0;
         targetTicks = 0;
         stop();
       }
-    }
-    else if (dir == RIGHT)
-    {
+    } else if (dir == RIGHT) {
       if (rightReverseTicksTurns >= targetTicks)
       {
         deltaTicks = 0;
         targetTicks = 0;
         stop();
       }
-    }
-    else if (dir == STOP)
-    {
+    } else if (dir == STOP) {
       deltaTicks = 0;
       targetTicks = 0;
       stop();          
-      }
     }
-   }
+  }
+}
+  
