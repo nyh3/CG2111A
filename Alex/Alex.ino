@@ -10,6 +10,7 @@ typedef enum {
   LEFT = 3,
   RIGHT = 4,
 } TDirection;
+
 volatile TDirection dir = STOP;
 
 #include <stdarg.h> //debug printing
@@ -53,8 +54,7 @@ float AlexCirc = 0.0;
  *    Alex's State Variables
  */
 
-// Store the ticks from Alex's left and
-// right encoders.
+// Store the ticks from Alex's left & right encoders.
 volatile unsigned long leftForwardTicks; 
 volatile unsigned long rightForwardTicks;
 volatile unsigned long leftReverseTicks;
@@ -66,8 +66,7 @@ volatile unsigned long rightForwardTicksTurns;
 volatile unsigned long leftReverseTicksTurns;
 volatile unsigned long rightReverseTicksTurns;
 
-// Store the revolutions on Alex's left
-// and right wheels
+// Store the revolutions on Alex's left & right wheels
 volatile unsigned long leftRevs;
 volatile unsigned long rightRevs;
 
@@ -75,11 +74,11 @@ volatile unsigned long rightRevs;
 volatile unsigned long forwardDist;
 volatile unsigned long reverseDist;
 
-// variables to keep track of whether we have moved a commanded distance
+// Variables to keep track whether Alex moved a commanded distance
 unsigned long deltaDist;
 unsigned long newDist;
 
-// variables to keep track of our turning angle
+// Variables to keep track of Alex's turning angle
 unsigned long deltaTicks;
 unsigned long targetTicks;
 
@@ -134,8 +133,7 @@ void sendStatus()
 
 void sendMessage(const char *message)
 {
-  // Sends text messages back to the Pi. Useful
-  // for debugging.
+  // Sends text messages back to the Pi. Useful for debugging.
   
   TPacket messagePacket;
   messagePacket.packetType=PACKET_TYPE_MESSAGE;
@@ -230,31 +228,32 @@ void enablePullups()
 }
 
 // Functions to be called by INT0 and INT1 ISRs.
+// Assume number of clicks in left & right encoder is similar
 void leftISR()
 {
   switch(dir) {
     case(FORWARD):
       leftForwardTicks++;
-    //leftRevs = leftTicks / COUNTS_PER_REV;
-    forwardDist = leftRevs * WHEEL_CIRC;
+      //leftRevs = leftTicks / COUNTS_PER_REV;
+      forwardDist = leftRevs * WHEEL_CIRC;
   
-    //Serial.print("LEFT FORWARD: ");
-    //Serial.println(leftForwardTicks);
-    if (dir == FORWARD)
-      forwardDist = (unsigned long) ((float) leftForwardTicks / COUNTS_PER_REV * WHEEL_CIRC);
-      break;
+      //Serial.print("LEFT FORWARD: ");
+      //Serial.println(leftForwardTicks);
+      if (dir == FORWARD)
+        forwardDist = (unsigned long) ((float) leftForwardTicks / COUNTS_PER_REV * WHEEL_CIRC);
+        break;
     case(BACKWARD):
       leftReverseTicks++;
       //Serial.print("LEFT BACKWARD: ");
       //Serial.println(leftReverseTicks);
       if (dir == BACKWARD)
-        forwardDist = (unsigned long) ((float) leftReverseTicks / COUNTS_PER_REV * WHEEL_CIRC); 
+        reverseDist = (unsigned long) ((float) leftReverseTicks / COUNTS_PER_REV * WHEEL_CIRC); 
         break;
     case(LEFT):
       leftReverseTicksTurns++; 
       //Serial.print("LEFT LEFTTURN: "); 
       //Serial.println(leftReverseTicksTurns); 
-      break; 
+      break;
      case(RIGHT): 
       leftForwardTicksTurns++;
       //Serial.print("LEFT RIGHTTURN: "); 
@@ -416,9 +415,8 @@ void forward(float dist, float speed)
   dir = FORWARD;
   int val = pwmVal(speed);
 
-  // For now we will ignore dist and move
-  // forward indefinitely. We will fix this
-  // in Week 9.
+  // For now we will ignore dist and move forward indefinitely. 
+  // We will fix this in Week 9.
 
   // LF = Left forward pin, LR = Left reverse pin
   // RF = Right forward pin, RR = Right reverse pin
@@ -426,7 +424,7 @@ void forward(float dist, float speed)
   
   analogWrite(LF, val);
   analogWrite(RF, val);
-  analogWrite(LR,0);
+  analogWrite(LR, 0);
   analogWrite(RR, 0);
 }
 
@@ -443,7 +441,7 @@ void reverse(float dist, float speed)
     deltaDist = 9999999;
   }
   newDist=reverseDist + deltaDist;
-
+  dir = REVERSE;
   int val = pwmVal(speed);
 
   // For now we will ignore dist and 
@@ -478,16 +476,15 @@ unsigned long computeDeltaTicks(float ang)
 // Specifying an angle of 0 degrees will cause Alex to
 // turn left indefinitely.
 void left(float ang, float speed)
-{
-  int val = pwmVal(speed);
-  dir = LEFT;
-  
+{  
   if(ang == 0) {
     deltaTicks=99999999;
   } else {
     deltaTicks=computeDeltaTicks(ang);
   }
   targetTicks = leftReverseTicksTurns + deltaTicks;
+  dir = LEFT;
+  int val = pwmVal(speed);
   
   // For now we will ignore ang. We will fix this in Week 9.
   // We will also replace this code with bare-metal later.
@@ -506,15 +503,15 @@ void left(float ang, float speed)
 // turn right indefinitely.
 void right(float ang, float speed)
 {
-  int val = pwmVal(speed);
-  dir = RIGHT;
   if(ang == 0) {
     deltaTicks=99999999;
   } else {
     deltaTicks=computeDeltaTicks(ang);
   }
   targetTicks = leftReverseTicksTurns + deltaTicks;
-  
+  dir = RIGHT;
+  int val = pwmVal(speed);
+
   // For now we will ignore ang. We will fix this in Week 9.
   // We will also replace this code with bare-metal later.
   // To turn right we reverse the right wheel and move
@@ -550,7 +547,8 @@ void clearCounters()
   reverseDist=0; 
 }
 
-// Clears one particular counter
+// Clears all counters
+// Change to clear one particular counter in future
 void clearOneCounter(int which)
 {
   clearCounters();
