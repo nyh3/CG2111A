@@ -441,7 +441,7 @@ void reverse(float dist, float speed)
     deltaDist = 9999999;
   }
   newDist=reverseDist + deltaDist;
-  dir = REVERSE;
+  dir = BACKWARD;
   int val = pwmVal(speed);
 
   // For now we will ignore dist and 
