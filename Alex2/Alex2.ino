@@ -26,58 +26,48 @@ volatile TDirection dir = STOP;
 #define COUNTS_PER_REV      92
 
 // Wheel circumference in cm.
-// We will use this to calculate forward/backward distance traveled 
-// by taking revs * WHEEL_CIRC
-
+// We will use this to calculate forward/backward distance traveled by taking revs * WHEEL_CIRC
 #define WHEEL_CIRC          20.42
 
 // Motor control pins. You need to adjust these till
 // Alex moves in the correct direction
-/*#define LF                  10   // Left forward pin
-#define LR                  11   // Left reverse pin
-#define RF                  6  // Right forward pin
-#define RR                  5  // Right reverse pin*/
 #define LF                  5   // Left forward pin
 #define LR                  6  // Left reverse pin
 #define RF                  11  // Right forward pin
 #define RR                  10  // Right reverse pin
 
-
 #define pin_2 0b100
 #define pin_3 0b1000
 
+// PI, for calculating turn circumference
 #define PI 3.141592654
 
+// Alex's length and breadth in cm
 #define ALEX_LENGTH 24.6
 #define ALEX_BREADTH 15
 
-//Alex's diagonal, calculated once on setup
+// Alex's diagonal, calculated once on setup
 float AlexDiagonal = 0.0;
 
-//Alex's turning circumfeence, calculated once on setup
+// Alex's turning circumfeence, calculated once on setup
 float AlexCircum = 0.0;
 /*
  *    Alex's State Variables
  */
 
-// Store the ticks from Alex's left and
-// right encoders.
+// Store the ticks from Alex's left and right encoders for moving forward and backwards.
 volatile unsigned long leftForwardTicks; 
 volatile unsigned long rightForwardTicks;
 volatile unsigned long leftReverseTicks; 
 volatile unsigned long rightReverseTicks;
 
+// Left and right encoder ticks for turning
 volatile unsigned long leftForwardTicksTurns; 
 volatile unsigned long rightForwardTicksTurns;
 volatile unsigned long leftReverseTicksTurns; 
 volatile unsigned long rightReverseTicksTurns;
 
-//variables to keep track of turning angle
-volatile unsigned long deltaTicks;
-volatile unsigned long targetTicks;
-
-// Store the revolutions on Alex's left
-// and right wheels
+// Store the revolutions on Alex's left and right wheels
 volatile unsigned long leftRevs;
 volatile unsigned long rightRevs;
 
@@ -85,9 +75,13 @@ volatile unsigned long rightRevs;
 volatile unsigned long forwardDist;
 volatile unsigned long reverseDist;
 
+// Variables to keep track of whether we have moved a commanded distance
 unsigned long deltaDist;
 unsigned long newDist;
 
+// Variables to keep track of turning angle
+volatile unsigned long deltaTicks;
+volatile unsigned long targetTicks;
 /*
  * 
  * Alex Communication Routines.
@@ -99,17 +93,13 @@ TResult readPacket(TPacket *packet)
     // Reads in data from the serial port and
     // deserializes it.Returns deserialized
     // data in "packet".
-    
     char buffer[PACKET_SIZE];
     int len;
-
     len = readSerial(buffer);
-
     if(len == 0)
       return PACKET_INCOMPLETE;
     else
       return deserialize(buffer, len, packet);
-    
 }
 
 void sendStatus()
@@ -120,7 +110,6 @@ void sendStatus()
   // Use the params array to store this information, and set the
   // packetType and command files accordingly, then use sendResponse
   // to send out the packet. See sendMessage on how to use sendResponse.
-  //
   TPacket messagePacket;
   messagePacket.packetType=PACKET_TYPE_RESPONSE;
   messagePacket.command=RESP_STATUS;
@@ -139,9 +128,7 @@ void sendStatus()
 
 void sendMessage(const char *message)
 {
-  // Sends text messages back to the Pi. Useful
-  // for debugging.
-  
+  // Sends text messages back to the Pi. Useful for debugging.
   TPacket messagePacket;
   messagePacket.packetType=PACKET_TYPE_MESSAGE;
   strncpy(messagePacket.data, message, MAX_STR_LEN);
@@ -159,21 +146,16 @@ void dbprintf(char *format, ...) {
 
 void sendBadPacket()
 {
-  // Tell the Pi that it sent us a packet with a bad
-  // magic number.
-  
+  // Tell the Pi that it sent us a packet with a bad magic number.
   TPacket badPacket;
   badPacket.packetType = PACKET_TYPE_ERROR;
   badPacket.command = RESP_BAD_PACKET;
   sendResponse(&badPacket);
-  
 }
 
 void sendBadChecksum()
 {
-  // Tell the Pi that it sent us a packet with a bad
-// checksum.
-  
+  // Tell the Pi that it sent us a packet with a bad checksum.
   TPacket badChecksum;
   badChecksum.packetType = PACKET_TYPE_ERROR;
   badChecksum.command = RESP_BAD_CHECKSUM;
@@ -182,14 +164,11 @@ void sendBadChecksum()
 
 void sendBadCommand()
 {
-  // Tell the Pi that we don't understand its
-  // command sent to us.
-  
+  // Tell the Pi that we don't understand its command sent to us.
   TPacket badCommand;
   badCommand.packetType=PACKET_TYPE_ERROR;
   badCommand.command=RESP_BAD_COMMAND;
   sendResponse(&badCommand);
-
 }
 
 void sendBadResponse()
@@ -210,11 +189,9 @@ void sendOK()
 
 void sendResponse(TPacket *packet)
 {
-  // Takes a packet, serializes it then sends it out
-  // over the serial port.
+  // Takes a packet, serializes it then sends it out over the serial port.
   char buffer[PACKET_SIZE];
   int len;
-
   len = serialize(buffer, packet, sizeof(TPacket));
   writeSerial(buffer, len);
 }
@@ -233,7 +210,6 @@ void enablePullups()
   // We set bits 2 and 3 in DDRD to 0 to make them inputs. 
   DDRD = (~(pin_2) & ~(pin_3));
   PORTD |= (pin_2|pin_3);
-  
 }
 
 // Functions to be called by INT0 and INT1 ISRs.
@@ -267,7 +243,6 @@ void leftISR()
 //    Serial.println(leftForwardTicksTurns);
   break;
   }
-  
 }
 
 void rightISR()
@@ -305,8 +280,7 @@ void rightISR()
 void setupEINT()
 {
   // Use bare-metal to configure pins 2 and 3 to be
-  // falling edge triggered. Remember to enable
-  // the INT0 and INT1 interrupts.
+  // falling edge triggered. Remember to enable the INT0 and INT1 interrupts.
   EICRA |= 0b00001010;
   EIMSK |= 0b00000011;
   sei();
@@ -324,8 +298,6 @@ ISR(INT1_vect)
 {
   rightISR();
 }
-
-
 
 // Implement INT0 and INT1 ISRs above.
 
@@ -359,12 +331,9 @@ void startSerial()
 
 int readSerial(char *buffer)
 {
-
   int count=0;
-
   while(Serial.available())
     buffer[count++] = Serial.read();
-
   return count;
 }
 
@@ -407,10 +376,8 @@ int pwmVal(float speed)
 {
   if(speed < 0.0)
     speed = 0;
-
   if(speed > 100.0)
     speed = 100.0;
-
   return (int) ((speed / 100.0) * 255.0);
 }
 
@@ -425,11 +392,8 @@ void forward(float dist, float speed)
       deltaDist = dist;
   else
       deltaDist=9999999;
-  
   newDist=forwardDist + deltaDist;
-  
   dir = FORWARD;
-  
   int val = pwmVal(speed);
 
   // For now we will ignore dist and move
@@ -441,7 +405,7 @@ void forward(float dist, float speed)
   // This will be replaced later with bare-metal code.
   
   analogWrite(LF, val);
-  analogWrite(RF, val-4);
+  analogWrite(RF, val-4); // why minus 4
   analogWrite(LR,0);
   analogWrite(RR, 0);
 }
@@ -457,11 +421,8 @@ void reverse(float dist, float speed)
       deltaDist = dist;
   else
       deltaDist=9999999;
-  
   newDist=reverseDist + deltaDist;
-  
   dir = BACKWARD;
-  
   int val = pwmVal(speed);
 
   // For now we will ignore dist and 
@@ -477,9 +438,15 @@ void reverse(float dist, float speed)
   analogWrite(RF, 0);
 }
 
-unsigned long computeDeltaTicks (float ang)
+// New function to estimate number of wheel ticks needed to turn an angle
+unsigned long computeDeltaTicks (float ang) // why * 0.60
 {
-  unsigned long ticks = (unsigned long)((ang*0.60*AlexCircum*COUNTS_PER_REV)/(360.0*WHEEL_CIRC));
+  // We assume that angular distance moved = linear distance moved in one wheel
+  // revolution. This is (probably) incorrect but simplifies calculation.
+  // # of wheel revs to make one full 360 turn is AlexCircum / WHEEL_CIRC
+  // This is for 360 degrees. For ang degrees it will be (ang * AlexCircum) / (360 * WHEEL_CIRC)
+  // To convert to ticks, we multiply by COUNTS_PER_REV.
+  unsigned long ticks = (unsigned long)((ang * 0.60 * AlexCircum * COUNTS_PER_REV)/(360.0 * WHEEL_CIRC));
   return ticks;
 }
 
@@ -490,14 +457,11 @@ unsigned long computeDeltaTicks (float ang)
 // turn left indefinitely.
 void left(float ang, float speed)
 {
-
   if(ang > 0)
-      deltaTicks = computeDeltaTicks (ang);
+      deltaTicks = computeDeltaTicks(ang);
   else
-      deltaTicks=9999999;
-  
-  targetTicks=leftReverseTicksTurns + deltaTicks;
-  
+      deltaTicks=9999999; 
+  targetTicks = leftReverseTicksTurns + deltaTicks;
   dir = LEFT;
   int val = pwmVal(speed);
 
@@ -518,14 +482,11 @@ void left(float ang, float speed)
 // turn right indefinitely.
 void right(float ang, float speed)
 {
-  
   if(ang > 0)
-      deltaTicks = computeDeltaTicks (ang);
+      deltaTicks = computeDeltaTicks(ang);
   else
-      deltaTicks=9999999;
-  
-  targetTicks=rightReverseTicksTurns + deltaTicks;
-  
+      deltaTicks=9999999; 
+  targetTicks = rightReverseTicksTurns + deltaTicks; 
   dir = RIGHT;
   int val = pwmVal(speed);
 
@@ -542,7 +503,7 @@ void right(float ang, float speed)
 // Stop Alex. To replace with bare-metal code later.
 void stop()
 {
-analogWrite(LF, 0);
+  analogWrite(LF, 0);
   analogWrite(LR, 0);
   analogWrite(RF, 0);
   analogWrite(RR, 0);
@@ -575,8 +536,8 @@ void clearOneCounter(int which)
 {
   clearCounters();
 }
-// Intialize Vincet's internal states
 
+// Intialize Vincet's internal states
 void initializeState()
 {
   clearCounters();
@@ -610,15 +571,18 @@ void handleCommand(TPacket *command)
     case COMMAND_STOP:
         sendOK();
         stop();
-      break;    
+      break;   
+       
     case COMMAND_GET_STATS:
         sendOK();
         sendStatus(); 
       break;
+      
     case COMMAND_CLEAR_STATS:
         sendOK();
         clearOneCounter(command->params[0]);
       break;   
+      
     default:
       sendBadCommand();
   }
@@ -627,23 +591,18 @@ void handleCommand(TPacket *command)
 void waitForHello()
 {
   int exit=0;
-
   while(!exit)
   {
     TPacket hello;
     TResult result;
-    
     do
     {
       result = readPacket(&hello);
     } while (result == PACKET_INCOMPLETE);
-
     if(result == PACKET_OK)
     {
       if(hello.packetType == PACKET_TYPE_HELLO)
       {
-     
-
         sendOK();
         exit=1;
       }
@@ -663,7 +622,9 @@ void waitForHello()
 
 void setup() {
   // put your setup code here, to run once:
-
+  // Compute diagonal
+  AlexDiagonal = sqrt((ALEX_LENGTH * ALEX_LENGTH) + (ALEX_BREADTH * ALEX_BREADTH));
+  AlexCircum = PI * AlexDiagonal;
   cli();
   setupEINT();
   setupSerial();
@@ -673,9 +634,6 @@ void setup() {
   enablePullups();
   initializeState();
   sei();
-
-  AlexDiagonal = sqrt((ALEX_LENGTH*ALEX_LENGTH)+(ALEX_BREADTH * ALEX_BREADTH));
-  AlexCircum = PI * AlexDiagonal;
 }
 
 void handlePacket(TPacket *packet)
@@ -703,26 +661,18 @@ void handlePacket(TPacket *packet)
 void loop() {
 
 // Uncomment the code below for Step 2 of Activity 3 in Week 8 Studio 2
-
   //forward(0, 40);
-
 // Uncomment the code below for Week 9 Studio 2
-
-
  // put your main code here, to run repeatedly:
   TPacket recvPacket; // This holds commands from the Pi
-
   TResult result = readPacket(&recvPacket);
-  
   if(result == PACKET_OK)
     handlePacket(&recvPacket);
-  else
-    if(result == PACKET_BAD)
+  else if(result == PACKET_BAD)
     {
       sendBadPacket();
     }
-    else
-      if(result == PACKET_CHECKSUM_BAD)
+    else if(result == PACKET_CHECKSUM_BAD)
       {
         sendBadChecksum();
       } 
@@ -734,7 +684,6 @@ void loop() {
               stop();
           }
       }
-
       else if(dir == BACKWARD){
            if (reverseDist > newDist){
               deltaDist = 0;
@@ -742,13 +691,11 @@ void loop() {
               stop();
           } 
       }
-
       else if(dir == STOP){
           deltaDist = 0;
           newDist = 0;
           stop();
       }      
-      
   } 
   if (deltaTicks > 0){
       if (dir == LEFT){
@@ -758,24 +705,17 @@ void loop() {
               stop();
           }
       }
-
       else if(dir == RIGHT){
-
-      if (rightReverseTicksTurns >= targetTicks){
-              deltaTicks = 0;
-              targetTicks = 0;
-              stop();
-          } 
-      }
-
-      else 
-        if(dir == STOP){
+        if (rightReverseTicksTurns >= targetTicks){
           deltaTicks = 0;
           targetTicks = 0;
           stop();
-      }      
-      
-  } 
-  
-     
+          } 
+      }
+      else if(dir == STOP){
+        deltaTicks = 0;
+        targetTicks = 0;
+        stop();
+        }            
+   } 
 }
