@@ -490,7 +490,7 @@ void left(float ang, float speed)
 void right(float ang, float speed)
 {
   if(ang > 0)
-      deltaTicks = computeDeltaTicks(ang * 0.7);
+      deltaTicks = computeDeltaTicks(ang * 0.8);
   else
       deltaTicks=9999999; 
   targetTicks = rightReverseTicksTurns + deltaTicks; 
