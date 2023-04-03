@@ -8,6 +8,12 @@
 #define RED 1
 #define GREEN 2 
 
+/*
+  volatile unsigned long WHITE = 0;
+  volatile unsigned long RED = 1;
+  volatile unsigned long GREEN = 2;
+*/
+
 // Stores frequency read by the photodiodes
 int redFrequency = 0;
 int greenFrequency = 0;
@@ -40,8 +46,8 @@ void findcolour() {
   // map(redFrequency, lowest measured, highest measured, 255, 0)
   red = map(redFrequency, 0, 255, 255, 0);
   // Print the R value
-  // Serial.print("R = ");
-  // Serial.print(red);
+  //Serial.print("R = ");
+  //Serial.print(red);
   delay(100);
 
   // Setting green filtered photodiodes to be read
@@ -52,8 +58,8 @@ void findcolour() {
   // Remap the value of greenFrequency from 0 to 255
   green = map(greenFrequency, 0, 255, 255, 0);
   // Print the G value
-  // Serial.print("G = ");
-  // Serial.print(green);
+  //Serial.print("G = ");
+  //Serial.print(green);
   delay(100);
 
   // Setting blue filtered photodiodes to be read
@@ -64,8 +70,8 @@ void findcolour() {
   // Remap the value of blueFrequency from 0 to 255
   blue = map(blueFrequency, 0, 255, 255, 0);
   // Print the B value
-  // Serial.print("B = ");
-  // Serial.print(blue);
+  //Serial.print("B = ");
+  //Serial.print(blue);
   delay(100);
 
   // Check the colour detected

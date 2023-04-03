@@ -412,7 +412,7 @@ void forward(float dist, float speed)
   // This will be replaced later with bare-metal code.
   
   analogWrite(LF, val);
-  analogWrite(RF, val-4); // why minus 4
+  analogWrite(RF, val);
   analogWrite(LR,0);
   analogWrite(RR, 0);
 }
@@ -465,7 +465,7 @@ unsigned long computeDeltaTicks (float ang) // why * 0.60
 void left(float ang, float speed)
 {
   if(ang > 0)
-      deltaTicks = computeDeltaTicks(ang);
+      deltaTicks = computeDeltaTicks(ang * 0.7);
   else
       deltaTicks=9999999; 
   targetTicks = leftReverseTicksTurns + deltaTicks;
@@ -490,7 +490,7 @@ void left(float ang, float speed)
 void right(float ang, float speed)
 {
   if(ang > 0)
-      deltaTicks = computeDeltaTicks(ang);
+      deltaTicks = computeDeltaTicks(ang * 0.7);
   else
       deltaTicks=9999999; 
   targetTicks = rightReverseTicksTurns + deltaTicks; 
