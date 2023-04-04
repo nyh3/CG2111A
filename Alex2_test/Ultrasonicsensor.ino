@@ -1,34 +1,30 @@
-/*
-// Ultrasonic sensor pins
-#define trigpin 1
-#define echopin 2
 
-bool too_close;
+// Ultrasonic sensor pins
+#define TRIGPIN A0
+#define ECHOPIN A1
 
 void ultrasetup() {
-  pinMode(trigpin, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echopin, INPUT); // Sets the echoPin as an Input
+  pinMode(TRIGPIN, OUTPUT); // Sets the TRIGPIN as an Output
+  pinMode(ECHOPIN, INPUT); // Sets the ECHOPIN as an Input
 }
 
-long mstocm(long microseconds) {
-   return microseconds / 29 / 2;
-}
-
-void ultrasonic() {
+bool too_close() {
   long duration;
   long distance;
-
-  digitalWrite(trigpin, LOW);
+  // Clears the TRIGPIN
+  digitalWrite(TRIGPIN, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigpin, HIGH);
+  // Sets the TRIGPIN on HIGH state for 10 microseconds
+  digitalWrite(TRIGPIN, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigpin, LOW);
-  duration = pulseIn(echopin, HIGH);
-  distance = mstocm(duration);
-  if (distance < 2) {
-    too_close = true;
+  digitalWrite(TRIGPIN, LOW);
+  // Reads the ECHOPIN, returns the soundwave travel yime in microseconds
+  duration = pulseIn(ECHOPIN, HIGH);
+  // Calculating the distance
+  distance = (duration * 0.034) / 2;
+  if (distance <= 5) {
+    return true;
   } else {
-    too_close = false;
+    return false;;
   }
 }
-*/

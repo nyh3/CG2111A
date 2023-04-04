@@ -398,8 +398,8 @@ void forward(float dist, float speed)
   if(dist > 0)
       deltaDist = dist;
   else
-      deltaDist=9999999;
-  newDist=forwardDist + deltaDist;
+      deltaDist = 9999999;
+  newDist = forwardDist + deltaDist;
   dir = FORWARD;
   int val = pwmVal(speed);
 
@@ -413,7 +413,7 @@ void forward(float dist, float speed)
   
   analogWrite(LF, val);
   analogWrite(RF, val);
-  analogWrite(LR,0);
+  analogWrite(LR, 0);
   analogWrite(RR, 0);
 }
 
@@ -427,8 +427,8 @@ void reverse(float dist, float speed)
   if(dist > 0)
       deltaDist = dist;
   else
-      deltaDist=9999999;
-  newDist=reverseDist + deltaDist;
+      deltaDist = 9999999;
+  newDist = reverseDist + deltaDist;
   dir = BACKWARD;
   int val = pwmVal(speed);
 
@@ -467,7 +467,7 @@ void left(float ang, float speed)
   if(ang > 0)
       deltaTicks = computeDeltaTicks(ang * 0.7);
   else
-      deltaTicks=9999999; 
+      deltaTicks = 9999999; 
   targetTicks = leftReverseTicksTurns + deltaTicks;
   dir = LEFT;
   int val = pwmVal(speed);
@@ -492,7 +492,7 @@ void right(float ang, float speed)
   if(ang > 0)
       deltaTicks = computeDeltaTicks(ang * 0.8);
   else
-      deltaTicks=9999999; 
+      deltaTicks = 9999999; 
   targetTicks = rightReverseTicksTurns + deltaTicks; 
   dir = RIGHT;
   int val = pwmVal(speed);
@@ -639,6 +639,7 @@ void setup() {
   AlexCircum = PI * AlexDiagonal;
   cli();
   coloursetup();
+  ultrasetup();
   setupEINT();
   setupSerial();
   startSerial();
@@ -691,7 +692,7 @@ void loop() {
       } 
   if (deltaDist > 0){
       if (dir == FORWARD){
-          if (forwardDist > newDist){
+          if (forwardDist > newDist || too_close){
               deltaDist = 0;
               newDist = 0;
               stop();
