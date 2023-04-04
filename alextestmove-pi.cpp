@@ -201,7 +201,7 @@ void sendCommand(char command)
 
 		case 'b':
 		case 'B':
-            commandPacket.params[0] = 10;
+        	commandPacket.params[0] = 10;
 			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_REVERSE;
 			sendPacket(&commandPacket);
@@ -209,7 +209,7 @@ void sendCommand(char command)
 
 		case 'l':
 		case 'L':
-            commandPacket.params[0] = 30;
+        	commandPacket.params[0] = 30;
 			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_TURN_LEFT;
 			sendPacket(&commandPacket);
