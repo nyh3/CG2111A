@@ -194,7 +194,7 @@ void sendCommand(char command)
 		case 'f':
 		case 'F':
 			commandPacket.params[0] = 10;
-            commandPacket.params[1] = 75;
+			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_FORWARD;
 			sendPacket(&commandPacket);
 			break;
@@ -202,7 +202,7 @@ void sendCommand(char command)
 		case 'b':
 		case 'B':
             commandPacket.params[0] = 10;
-            commandPacket.params[1] = 75;
+			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_REVERSE;
 			sendPacket(&commandPacket);
 			break;
@@ -210,7 +210,7 @@ void sendCommand(char command)
 		case 'l':
 		case 'L':
             commandPacket.params[0] = 30;
-            commandPacket.params[1] = 75;
+			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_TURN_LEFT;
 			sendPacket(&commandPacket);
 			break;
@@ -218,7 +218,7 @@ void sendCommand(char command)
 		case 'r':
 		case 'R':
 			commandPacket.params[0] = 30;
-            commandPacket.params[1] = 75;
+			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_TURN_RIGHT;
 			sendPacket(&commandPacket);
 			break;
