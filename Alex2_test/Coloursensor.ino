@@ -75,14 +75,14 @@ void findcolour() {
   delay(100);
 
   // Check the colour detected
-  if (red > 250 && green > 250 && blue > 250) {
-    //Serial.println("WHITE");
-    sendcolour(WHITE);
-  } else if(red > green) {
+  if (red > green + 30) {
     //Serial.println("RED");
     sendcolour(RED);
-  } else {
+  } else if(green > red + 25) {
     //Serial.println("GREEN");
     sendcolour(GREEN);
+  } else {
+    //Serial.println("WHITE");
+    sendcolour(WHITE);
   }
 }
