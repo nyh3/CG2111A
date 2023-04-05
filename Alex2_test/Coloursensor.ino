@@ -75,7 +75,7 @@ void findcolour() {
   delay(100);
 
   // Check the colour detected
-  if (red > green + 30) {
+  if (red > green) {
     //Serial.println("RED");
     sendcolour(RED);
   } else if(green > red + 25) {

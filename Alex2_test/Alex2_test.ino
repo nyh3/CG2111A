@@ -692,7 +692,7 @@ void loop() {
       } 
   if (deltaDist > 0){
       if (dir == FORWARD){
-          if (forwardDist > newDist || too_close){
+          if (forwardDist > newDist){
               deltaDist = 0;
               newDist = 0;
               stop();
