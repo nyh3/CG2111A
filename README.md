@@ -9,3 +9,5 @@ gcc alex-pi.cpp serial.cpp serialize.cpp -pthread -o Alex-pi
 gcc alextest-pi.cpp serial.cpp serialize.cpp -pthread -o alextest-pi
 
 ./alextest-pi
+
+roslaunch rplidar_ros rplidar.launch
