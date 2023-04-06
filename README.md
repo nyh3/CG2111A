@@ -11,3 +11,5 @@ gcc alextest-pi.cpp serial.cpp serialize.cpp -pthread -o alextest-pi
 ./alextest-pi
 
 roslaunch rplidar_ros rplidar.launch
+
+Alex2_testultra can get distance from front and back from get stats.
