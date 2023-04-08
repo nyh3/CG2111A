@@ -52,7 +52,7 @@ void handleStatus(TPacket *packet)
 void handlecolour(TPacket *packet)
 {
 	printf("\n ------- COLOUR DETECTED ------- \n\n");
-	printf("WHITE RED GREEN:\t\t%d\n", packet->params[0]);
+	printf("FAKE RED GREEN:\t\t%d\n", packet->params[0]);
 	printf("\n---------------------------------------\n\n");
 }
 
@@ -193,59 +193,64 @@ void sendCommand(char command)
 
 	switch(command)
 	{
-		case 'f':
-		case 'F':
+		case 'e':
+		case 'E':
+			commandPacket.params[0] = 2;
+			commandPacket.params[1] = 75;
+			commandPacket.command = COMMAND_FORWARD;
+			sendPacket(&commandPacket);
+			break;
+
+		case 'w':
+		case 'W':
 			commandPacket.params[0] = 10;
 			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_FORWARD;
 			sendPacket(&commandPacket);
 			break;
 
-		case 'b':
-		case 'B':
+		case 's':
+		case 'S':
         	commandPacket.params[0] = 10;
 			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_REVERSE;
 			sendPacket(&commandPacket);
 			break;
 
-		case 'l':
-		case 'L':
+		case 'a':
+		case 'A':
         	commandPacket.params[0] = 30;
 			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_TURN_LEFT;
 			sendPacket(&commandPacket);
 			break;
 
-		case 'r':
-		case 'R':
+		case 'd':
+		case 'D':
 			commandPacket.params[0] = 30;
 			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_TURN_RIGHT;
 			sendPacket(&commandPacket);
 			break;
 
-		case 's':
-		case 'S':
+		case 'z':
+		case 'Z':
 			commandPacket.command = COMMAND_STOP;
 			sendPacket(&commandPacket);
 			break;
 		
-		case 'a':
-		case 'A':
+		case '1':
 			commandPacket.command = COMMAND_FIND_COLOUR;
 			sendPacket(&commandPacket);
 			break;
 
-		case 'c':
-		case 'C':
+		case '2':
 			commandPacket.command = COMMAND_CLEAR_STATS;
 			commandPacket.params[0] = 0;
 			sendPacket(&commandPacket);
 			break;
 
-		case 'g':
-		case 'G':
+		case '3':
 			commandPacket.command = COMMAND_GET_STATS;
 			sendPacket(&commandPacket);
 			break;
@@ -285,7 +290,7 @@ int main()
 	while(!exitFlag)
 	{
 		char ch;
-		printf("Command (f=forward, b=reverse, l=turn left, r=turn right, s=stop, a=get colour c=clear stats, g=get stats q=exit)\n");
+		printf("Command (e=smallforward, w=forward, s=reverse, a=turn left, d=turn right, z=stop, 1=get colour, 2=get stats, 3=clear stats, q=exit)\n");
 		scanf("%c", &ch);
 
 		// Purge extraneous characters from input stream
