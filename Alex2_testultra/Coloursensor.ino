@@ -4,15 +4,9 @@
 #define S2 13
 #define S3 9
 #define OUT 12
-#define WHITE 0
+#define FAKE 0
 #define RED 1
 #define GREEN 2 
-
-/*
-  volatile unsigned long WHITE = 0;
-  volatile unsigned long RED = 1;
-  volatile unsigned long GREEN = 2;
-*/
 
 // Stores frequency read by the photodiodes
 int redFrequency = 0;
@@ -82,7 +76,7 @@ void findcolour() {
     //Serial.println("GREEN");
     sendcolour(GREEN);
   } else {
-    //Serial.println("WHITE");
-    sendcolour(WHITE);
+    //Serial.println("FAKE");
+    sendcolour(FAKE);
   }
 }
