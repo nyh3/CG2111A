@@ -4,7 +4,7 @@
 #define S2 13
 #define S3 9
 #define OUT 12
-#define WHITE 0
+#define FAKE 0
 #define RED 1
 #define GREEN 2 
 
@@ -76,14 +76,14 @@ void loop() {
   delay(100);
 
   // Check the colour detected
-  if (red > green + 30) {
+  if (red > 250 && green < 50 && blue < 50) {
     Serial.println("RED");
     //sendcolour(RED);
-  } else if(green > red + 25) {
+  } else if(green > 250 && red < 50 && blue < 50) {
     Serial.println("GREEN");
     //sendcolour(GREEN);
   } else {
-    Serial.println("WHITE");
-    //sendcolour(WHITE);
+    Serial.println("FAKE");
+    //sendcolour(FAKE);
   }
 }
