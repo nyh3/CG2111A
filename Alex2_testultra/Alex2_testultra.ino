@@ -467,7 +467,7 @@ unsigned long computeDeltaTicks (float ang) // why * 0.60
 void left(float ang, float speed)
 {
   if(ang > 0)
-      deltaTicks = computeDeltaTicks(ang * 0.7);
+      deltaTicks = computeDeltaTicks(ang * 0.6);
   else
       deltaTicks = 9999999; 
   targetTicks = leftReverseTicksTurns + deltaTicks;
