@@ -19,3 +19,5 @@ gcc alextestultra-pi.cpp serial.cpp serialize.cpp -pthread -o alextestultra-pi
 WASD to move, e to move 2 cm forward, Z to stop, 1 to get colour, 2 to get stats, 3 to clear stats, q to quit
 
 read the RGB value from pi and determine the colour ourself?
+
+ssh -x pi@192.168.22.115
