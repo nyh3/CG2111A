@@ -209,6 +209,14 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
+		case 'p':
+		case 'P':
+			commandPacket.params[0] = 30;
+			commandPacket.params[1] = 100;
+			commandPacket.command = COMMAND_FORWARD;
+			sendPacket(&commandPacket);
+			break;
+
 		case 's':
 		case 'S':
         	commandPacket.params[0] = 10;
@@ -220,6 +228,14 @@ void sendCommand(char command)
 		case 'a':
 		case 'A':
         	commandPacket.params[0] = 30;
+			commandPacket.params[1] = 75;
+			commandPacket.command = COMMAND_TURN_LEFT;
+			sendPacket(&commandPacket);
+			break;
+
+		case 'j':
+		case 'J':
+        	commandPacket.params[0] = 10;
 			commandPacket.params[1] = 75;
 			commandPacket.command = COMMAND_TURN_LEFT;
 			sendPacket(&commandPacket);
@@ -252,13 +268,13 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
-		case '2':
+		case '3':
 			commandPacket.command = COMMAND_CLEAR_STATS;
 			commandPacket.params[0] = 0;
 			sendPacket(&commandPacket);
 			break;
 
-		case '3':
+		case '2':
 			commandPacket.command = COMMAND_GET_STATS;
 			sendPacket(&commandPacket);
 			break;
@@ -298,7 +314,7 @@ int main()
 	while(!exitFlag)
 	{
 		char ch;
-		printf("Command (e=smallforward, w=forward, s=reverse, a=turn left, d=turn right, f=turn right 10, z=stop, 1=get colour, 2=get stats, 3=clear stats, q=exit)\n");
+		printf("Command (e=smallforward, w=forward, p=power, s=reverse, a=turn left, j=turnleft 10 d=turn right, f=turn right 10, z=stop, 1=get colour, 2=get stats, 3=clear stats, q=exit)\n");
 		scanf("%c", &ch);
 
 		// Purge extraneous characters from input stream
