@@ -38,7 +38,7 @@ void findcolour() {
   redFrequency = pulseIn(OUT, LOW);
   // Remap the value of redFrequency from 0 to 255
   // map(redFrequency, lowest measured, highest measured, 255, 0)
-  red = map(redFrequency, 125, 240, 255, 0);
+  red = map(redFrequency, 125, 200, 255, 0);
   // Print the R value
   //Serial.print("R = ");
   //Serial.print(red);
@@ -50,7 +50,7 @@ void findcolour() {
   // Reading the output frequency
   greenFrequency = pulseIn(OUT, LOW);
   // Remap the value of greenFrequency from 0 to 255
-  green = map(greenFrequency, 120, 211, 255, 0);
+  green = map(greenFrequency, 120, 180, 255, 0);
   // Print the G value
   //Serial.print("G = ");
   //Serial.print(green);
@@ -62,17 +62,17 @@ void findcolour() {
   // Reading the output frequency
   blueFrequency = pulseIn(OUT, LOW);
   // Remap the value of blueFrequency from 0 to 255
-  blue = map(blueFrequency, 90, 161, 255, 0);
+  blue = map(blueFrequency, 90, 135, 255, 0);
   // Print the B value
   //Serial.print("B = ");
   //Serial.print(blue);
   delay(100);
 
   // Check the colour detected
-  if (red > 175 && green < 90 && blue < 80) {
+  if (red > 160 && green < 100 && blue < 100 && green + 30 > blue && blue +30 > green) {
     //Serial.println("RED");
     sendcolour(RED);
-  } else if(red +50 > green && red < green +10 && 1.6 * blue < green && green>0) {
+  } else if(red *2.5 > green && red < green && 2 * blue < green && green>blue && green > 25) {
     //Serial.println("GREEN");
     sendcolour(GREEN);
   } else {
