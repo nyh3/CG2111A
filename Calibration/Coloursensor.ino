@@ -43,12 +43,14 @@ void loop() {
   digitalWrite(S3,LOW);
   // Reading the output frequency
   redFrequency = pulseIn(OUT, LOW);
+  //Serial.print("RF=");
+  //Serial.println(redFrequency);
   // Remap the value of redFrequency from 0 to 255
   // map(redFrequency, lowest measured, highest measured, 255, 0)
-  red = map(redFrequency, 0, 255, 255, 0);
+  red = map(redFrequency, 125, 200, 255, 0);
   // Print the R value
   Serial.print("R = ");
-  Serial.print(redFrequency);
+  Serial.println(red);
   delay(100);
 
   // Setting green filtered photodiodes to be read
@@ -56,11 +58,13 @@ void loop() {
   digitalWrite(S3,HIGH);
   // Reading the output frequency
   greenFrequency = pulseIn(OUT, LOW);
+  //Serial.print("GF=");
+  //Serial.println(greenFrequency);
   // Remap the value of greenFrequency from 0 to 255
-  green = map(greenFrequency, 0, 255, 255, 0);
+  green = map(greenFrequency, 120, 180, 255, 0);
   // Print the G value
   Serial.print("G = ");
-  Serial.print(greenFrequency);
+  Serial.println(green);
   delay(100);
 
   // Setting blue filtered photodiodes to be read
@@ -68,18 +72,24 @@ void loop() {
   digitalWrite(S3,HIGH);
   // Reading the output frequency
   blueFrequency = pulseIn(OUT, LOW);
+  //Serial.print("BF=");
+  //Serial.println(blueFrequency);
   // Remap the value of blueFrequency from 0 to 255
-  blue = map(blueFrequency, 0, 255, 255, 0);
+  blue = map(blueFrequency, 90, 135, 255, 0);
   // Print the B value
   Serial.print("B = ");
-  Serial.print(blueFrequency);
+  Serial.println(blue);
   delay(100);
 
   // Check the colour detected
-  if (red > 250 && green < 50 && blue < 50) {
+  if (red > 160 && green < 100 && blue < 100 && green + 30 > blue && blue +30 > green) {
+    //200, 60, 50
+    //220,80,50
     Serial.println("RED");
     //sendcolour(RED);
-  } else if(green > 250 && red < 50 && blue < 50) {
+  } else if(red *2.5 > green && red < green && 2 * blue < green && green>blue && green > 25) {
+    //R<70, 60<115, B<70 blueish dark green R*1.4 
+    //125<R<145, 140<G<160, 60<B<80 light green
     Serial.println("GREEN");
     //sendcolour(GREEN);
   } else {
