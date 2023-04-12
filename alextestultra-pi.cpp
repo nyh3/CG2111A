@@ -257,6 +257,18 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
+		case '0':
+			getParams(&commandPacket);
+			commandPacket.command = COMMAND_FORWARD;
+			sendPacket(&commandPacket);
+			break;
+
+		case '9':
+        	getParams(&commandPacket);
+			commandPacket.command = COMMAND_REVERSE;
+			sendPacket(&commandPacket);
+			break;
+
 		case 'z':
 		case 'Z':
 			commandPacket.command = COMMAND_STOP;
@@ -314,7 +326,7 @@ int main()
 	while(!exitFlag)
 	{
 		char ch;
-		printf("Command (e=smallforward, w=forward, p=power, s=reverse, a=turn left, j=turnleft 10 d=turn right, f=turn right 10, z=stop, 1=get colour, 2=get stats, 3=clear stats, q=exit)\n");
+		printf("Command (0= forward adjust, 9 = backward adjust, e=smallforward, w=forward, p=power, s=reverse, a=turn left, j=turnleft 10 d=turn right, f=turn right 10, z=stop, 1=get colour, 2=get stats, 3=clear stats, q=exit)\n");
 		scanf("%c", &ch);
 
 		// Purge extraneous characters from input stream
